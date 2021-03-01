@@ -39,7 +39,8 @@
 
     visibility: hidden;
     opacity: 0;
-    transition: visibility .3s ease-in-out, opacity 0.5s linear;
+    height: 0;
+    transition: visibility .3s ease-in-out, opacity 0.5s linear, height 0.5s linear;
     //display: none;
 
     @include tablet {
@@ -79,6 +80,7 @@
 .mostrar{
     visibility: visible;
     opacity: 1;
+    height: auto;
 
     /*display:flex;
     flex-direction: column;
