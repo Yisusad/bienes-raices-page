@@ -6,10 +6,13 @@
 
     $db = conectarDB();
 
+    //Arreglo para mensajes de errores
+    $errores = [];
+
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
-        echo "<pre>";
-        var_dump($_POST);
-        echo "</pre>";
+        //echo "<pre>";
+        //var_dump($_POST);
+        //echo "</pre>";
 
         $titulo = $_POST['titulo'];
         $precio = $_POST['precio'];
@@ -19,8 +22,33 @@
         $estacionamiento = $_POST['estacionamiento'];
         $vendedorId = $_POST['vendedor'];
 
-        //Insertar a BD
+        if(!$titulo){
+            $errores[]= "Tienes que añadir un título";
+        }
+        if(!$precio){
+            $errores[]= "Tienes que agregar un precio";
+        }
+        if( strlen($descripcion) < 50 ){
+            $errores[]= "Tienes que agregar una descripción con al menos 50 caracteres";
+        }
+        if(!$habitaciones){
+            $errores[]= "Tienes que añadir la cantidad de habitaciones";
+        }
+        if(!$wc){
+            $errores[]= "Tienes que añadir la cantidad de baños";
+        }
+        if(!$estacionamiento){
+            $errores[]= "Tienes que añadir la cantidad de estacionamientos";
+        }
+        if(!$vendedorId){
+            $errores[]= "Tienes que seleccionar un vendedor";
+        }
 
+ 
+        //Revisar que el arreglo de errores esté vacio para poder insertar en la BD
+        if(empty($errores)){
+        
+        //Insertar a BD
         $query = "INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, vendedorId) VALUES ( '$titulo',
         '$precio', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$vendedorId' )";
 
@@ -30,6 +58,8 @@
         if($resultado){
             echo "Insertado correctamente";
         }
+        }
+
     }
 
     require '../../includes/funciones.php';
@@ -41,6 +71,12 @@
         <h1>Crear</h1>
 
         <a href="/admin" class="boton boton-verde">Volver</a>
+
+        <?php foreach($errores as $error): ?>
+            <div class="alerta error">
+                <?php echo $error; ?>
+            </div>
+        <?php endforeach; ?>
 
         <form action="/admin/propiedades/crear.php" class="formulario" method="POST">
             <fieldset>
@@ -76,6 +112,7 @@
                 <legend>Vendedor</legend>
 
                 <select name="vendedor">
+                    <option value="">-- Seleccione --</option>
                     <option value="1">Juan</option>
                     <option value="2">Karen</option>
                 </select>
