@@ -6,6 +6,10 @@
 
     $db = conectarDB();
 
+    //Consultar todos los vendedores
+    $consulta = "SELECT * FROM vendedores";
+    $resultado = mysqli_query($db, $consulta);
+
     //Arreglo para mensajes de errores
     $errores = [];
 
@@ -16,6 +20,7 @@
     $wc = '';
     $estacionamiento = '';
     $vendedorId = '';
+    $creado = date('Y/m/d');
     
 
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -58,14 +63,17 @@
         if(empty($errores)){
         
         //Insertar a BD
-        $query = "INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, vendedorId) VALUES ( '$titulo',
-        '$precio', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$vendedorId' )";
+        $query = "INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, creado, vendedorId) VALUES ( '$titulo',
+        '$precio', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedorId' )";
 
         //echo $query;
         $resultado = mysqli_query($db, $query);
 
         if($resultado){
-            echo "Insertado correctamente";
+            //echo "Insertado correctamente";
+            //Se redirecciona para evitar entradas masivas
+
+            header('Location: /admin');
         }
         }
 
@@ -122,8 +130,10 @@
 
                 <select name="vendedor">
                     <option value="">-- Seleccione --</option>
-                    <option value="1">Juan</option>
-                    <option value="2">Karen</option>
+                    <?php while($vendedor = mysqli_fetch_assoc($resultado)): ?>
+                        <option <?php echo $vendedorId == $vendedor['id'] ? 'selected' : ''; ?> 
+                         value="<?php echo $vendedor['id']; ?>"><?php echo $vendedor['nombre']. " " .$vendedor['apellido']; ?></option>
+                    <?php endwhile; ?>
                 </select>
             </fieldset>
 
