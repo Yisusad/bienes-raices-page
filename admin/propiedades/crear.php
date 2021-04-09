@@ -20,21 +20,24 @@
     $wc = '';
     $estacionamiento = '';
     $vendedorId = '';
-    $creado = date('Y/m/d');
     
 
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
+
+
         //echo "<pre>";
         //var_dump($_POST);
         //echo "</pre>";
 
-        $titulo = $_POST['titulo'];
-        $precio = $_POST['precio'];
-        $descripcion = $_POST['descripcion'];
-        $habitaciones = $_POST['habitaciones'];
-        $wc = $_POST['wc'];
-        $estacionamiento = $_POST['estacionamiento'];
-        $vendedorId = $_POST['vendedor'];
+        //se usa mysqli_real*** para sanitizar y evitar injecciones
+        $titulo = mysqli_real_escape_string( $db, $_POST['titulo'] );
+        $precio = mysqli_real_escape_string( $db, $_POST['precio'] );
+        $descripcion = mysqli_real_escape_string( $db, $_POST['descripcion'] );
+        $habitaciones = mysqli_real_escape_string( $db, $_POST['habitaciones'] );
+        $wc = mysqli_real_escape_string( $db, $_POST['wc'] );
+        $estacionamiento = mysqli_real_escape_string( $db, $_POST['estacionamiento'] );
+        $vendedorId = mysqli_real_escape_string( $db, $_POST['vendedor'] );
+        $creado = date('Y/m/d');
 
         if(!$titulo){
             $errores[]= "Tienes que añadir un título";
@@ -62,19 +65,19 @@
         //Revisar que el arreglo de errores esté vacio para poder insertar en la BD
         if(empty($errores)){
         
-        //Insertar a BD
-        $query = "INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, creado, vendedorId) VALUES ( '$titulo',
-        '$precio', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedorId' )";
+            //Insertar a BD
+            $query = "INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, creado, vendedorId) VALUES ( '$titulo',
+            '$precio', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedorId' )";
 
-        //echo $query;
-        $resultado = mysqli_query($db, $query);
+            //echo $query;
+            $resultado = mysqli_query($db, $query);
 
-        if($resultado){
-            //echo "Insertado correctamente";
-            //Se redirecciona para evitar entradas masivas
+            if($resultado){
+                //echo "Insertado correctamente";
+                //Se redirecciona para evitar entradas masivas
 
-            header('Location: /admin');
-        }
+                header('Location: /admin');
+            }
         }
 
     }
