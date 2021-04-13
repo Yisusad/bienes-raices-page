@@ -25,9 +25,13 @@
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 
-        //echo "<pre>";
-        //var_dump($_POST);
-        //echo "</pre>";
+        // echo "<pre>";
+        // var_dump($_POST);
+        // echo "</pre>";
+
+        // echo "<pre>";
+        // var_dump($_FILES);
+        // echo "</pre>";
 
         //se usa mysqli_real*** para sanitizar y evitar injecciones
         $titulo = mysqli_real_escape_string( $db, $_POST['titulo'] );
@@ -38,6 +42,9 @@
         $estacionamiento = mysqli_real_escape_string( $db, $_POST['estacionamiento'] );
         $vendedorId = mysqli_real_escape_string( $db, $_POST['vendedor'] );
         $creado = date('Y/m/d');
+
+        //asigna FILES a una variable
+        $imagen = $_FILES['imagen'];
 
         if(!$titulo){
             $errores[]= "Tienes que añadir un título";
@@ -59,6 +66,16 @@
         }
         if(!$vendedorId){
             $errores[]= "Tienes que seleccionar un vendedor";
+        }
+        if(!$imagen['name'] || $imagen['error']){
+            $errores[]= "Tienes que agregar una imagen";
+        }
+
+        //validar por tamaño (100 kb máximo)
+        $medida = 1000 * 100;
+
+        if($imagen['size'] > $medida) {
+            $errores[]= "La imagen es muy pesada";
         }
 
  
@@ -98,7 +115,7 @@
             </div>
         <?php endforeach; ?>
 
-        <form action="/admin/propiedades/crear.php" class="formulario" method="POST">
+        <form class="formulario" action="/admin/propiedades/crear.php" method="POST" enctype="multipart/form-data">
             <fieldset>
                 <legend>Información General</legend>
 
@@ -109,7 +126,7 @@
                 <input type="number" id="precio" name="precio" placeholder="Precio de propiedad" value="<?php echo $precio; ?>">
 
                 <label for="imagen">Imagen</label>
-                <input type="file" id="imagen" accept="image/jpeg, image/png">
+                <input type="file" id="imagen" name="imagen" accept="image/jpeg, image/png">
 
                 <label for="descripcion">Descripción</label>
                 <textarea id="descripcion" name="descripcion"><?php echo $descripcion; ?></textarea>
