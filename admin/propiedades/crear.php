@@ -107,7 +107,7 @@
                 //echo "Insertado correctamente";
                 //Se redirecciona para evitar entradas masivas
 
-                header('Location: /admin');
+                header('Location: /admin?resultado=1');
             }
         }
 
