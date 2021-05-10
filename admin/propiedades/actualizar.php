@@ -78,9 +78,6 @@
         if(!$vendedorId){
             $errores[]= "Tienes que seleccionar un vendedor";
         }
-        if(!$imagen['name'] || $imagen['error']){
-            $errores[]= "Tienes que agregar una imagen";
-        }
 
         //validar por tamaño (1 mb máximo)
         $medida = 1000 * 1000;
@@ -101,16 +98,27 @@
             if(!is_dir($carpetaImagenes)){
                 mkdir($carpetaImagenes);
             }
-            //Generar nombre unico para imagenes
-            $nombreImagen = md5(uniqid(rand(), true)). ".jpg";
 
-            //subiendo imagen
-            move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen);
-        
+            $nombreImagen = '';
+            //Verifica si hay imagen
+            if($imagen['name']){
+                //Si hay imagen se elimina la anterior    
+                unlink($carpetaImagenes . $propiedad['imagen']);
+
+                //Generar nombre unico para imagenes
+                $nombreImagen = md5(uniqid(rand(), true)). ".jpg";
+
+                //subiendo imagen
+                move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen);
+     
+            }else {
+                //Si no hay imagen previa
+                $nombreImagen = $propiedad['imagen'];
+            }
+            
             //Insertar a BD
-            $query = "INSERT INTO propiedades (titulo, precio, imagen, descripcion, habitaciones, wc, estacionamiento, creado, vendedorId) VALUES ( '$titulo',
-            '$precio', '$nombreImagen', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedorId' )";
-
+            $query = "UPDATE propiedades SET titulo = '${titulo}', precio = '${precio}', imagen = '${nombreImagen}', descripcion = '${descripcion}', habitaciones = ${habitaciones}, 
+            wc = ${wc}, estacionamiento = ${estacionamiento}, vendedorId = ${vendedorId} WHERE id = ${id}";
             //echo $query;
             $resultado = mysqli_query($db, $query);
 
@@ -118,7 +126,7 @@
                 //echo "Insertado correctamente";
                 //Se redirecciona para evitar entradas masivas
 
-                header('Location: /admin?resultado=1');
+                header('Location: /admin?resultado=2');
             }
         }
 
@@ -140,7 +148,7 @@
             </div>
         <?php endforeach; ?>
 
-        <form class="formulario" action="/admin/propiedades/crear.php" method="POST" enctype="multipart/form-data">
+        <form class="formulario" method="POST" enctype="multipart/form-data">
             <fieldset>
                 <legend>Información General</legend>
 
